@@ -1,0 +1,11 @@
+{
+  "syncedAt": "2026-08-31T06:05:00+03:00",
+  "restingHr": 52,
+  "sleep": { "hours": 7.5, "score": 91 },
+  "plan": "leg day",
+  "feelsLikeC": 27,
+  "briefingAt": "06:05",
+  "wake": "05:45",
+  "bed": "21:30",
+  "stub": true
+}

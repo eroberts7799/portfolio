@@ -89,6 +89,24 @@ body {
   text-shadow: 0 0 8px color-mix(in srgb, var(--phosphor) 35%, transparent);
 }
 
+/* ECG strip: the trace brightens on each beat, timed to real resting HR. */
+@keyframes ecg-beat {
+  0% {
+    opacity: 0.45;
+    filter: drop-shadow(0 0 0 transparent);
+  }
+  10% {
+    opacity: 1;
+    filter: drop-shadow(0 0 6px color-mix(in srgb, var(--phosphor) 60%, transparent));
+  }
+  35% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 0.45;
+  }
+}
+
 /* Live signal dot. */
 @keyframes pulse {
   50% {

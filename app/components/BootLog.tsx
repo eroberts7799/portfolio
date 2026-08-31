@@ -2,19 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 
-const LINES = [
-  "$ boot --profile ethan",
-  "▸ garmin.hr ......... 162 bpm",
-  "▸ drop.scheduled .... 03:12",
-  "▸ sleep.score ....... 91 · briefing 06:05",
-  "▸ training.loss ..... 2.41 ↓",
-  "ready.",
-];
-
 const CHAR_MS = 18;
 const LINE_PAUSE_MS = 220;
 
-export default function BootLog() {
+export default function BootLog({ lines: LINES }: { lines: string[] }) {
   const [done, setDone] = useState<string[]>([]);
   const [typing, setTyping] = useState("");
   const [finished, setFinished] = useState(false);

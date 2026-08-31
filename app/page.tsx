@@ -1,5 +1,16 @@
 import BootLog from "./components/BootLog";
 import AwdjDemo from "./components/AwdjDemo";
+import Ecg from "./components/Ecg";
+import vitals from "../data/vitals.json";
+
+const bootLines = [
+  "$ boot --profile ethan",
+  `▸ resting.hr ........ ${vitals.restingHr} bpm`,
+  `▸ sleep ............. ${vitals.sleep.hours}h (${vitals.sleep.score})`,
+  `▸ plan .............. ${vitals.plan} · feels-like ${vitals.feelsLikeC}°`,
+  `▸ briefing.sent ..... ${vitals.briefingAt}`,
+  "ready.",
+];
 
 const projects = [
   {
@@ -81,7 +92,7 @@ export default function Home() {
       {/* Hero */}
       <main>
         <section className="pt-16 sm:pt-24">
-          <BootLog />
+          <BootLog lines={bootLines} />
           <h1
             className="rise mt-10 font-display text-[3.5rem] font-bold uppercase leading-[0.95] tracking-[0.01em] sm:text-[6rem]"
             style={{ animationDelay: "800ms" }}
@@ -102,6 +113,9 @@ export default function Home() {
             phone, and a server that texts me before I wake up. Everything
             below is real, running, and mine.
           </p>
+          <div className="rise mt-10" style={{ animationDelay: "1200ms" }}>
+            <Ecg bpm={vitals.restingHr} wake={vitals.wake} bed={vitals.bed} />
+          </div>
         </section>
 
         {/* Work */}
