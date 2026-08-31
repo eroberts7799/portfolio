@@ -80,7 +80,12 @@ export default function Home() {
               <span aria-hidden="true" className="mr-2 select-none text-olive">
                 ❯
               </span>
-              {p.trace}
+              {p.trace.split(" · ").map((seg, j) => (
+                <span key={seg}>
+                  {j > 0 && <span className="text-muted"> · </span>}
+                  <span className="whitespace-nowrap">{seg}</span>
+                </span>
+              ))}
             </p>
             {p.body.map((para) => (
               <p key={para.slice(0, 24)} className="mt-5">
