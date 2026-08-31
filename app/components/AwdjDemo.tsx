@@ -63,36 +63,104 @@ const gradePath =
   ).join(" ") +
   ` L${W},${H} Z`;
 
-function playDrop(ctx: AudioContext) {
-  const now = ctx.currentTime;
+// --- Audio: small synthesized workout mix (his real music stays private) ---
+
+function kick(ctx: AudioContext, at: number, hard: boolean) {
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
   osc.type = "sine";
-  osc.frequency.setValueAtTime(150, now);
-  osc.frequency.exponentialRampToValueAtTime(45, now + 0.35);
-  gain.gain.setValueAtTime(0.5, now);
-  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+  osc.frequency.setValueAtTime(hard ? 160 : 120, at);
+  osc.frequency.exponentialRampToValueAtTime(hard ? 55 : 50, at + 0.12);
+  gain.gain.setValueAtTime(hard ? 0.55 : 0.28, at);
+  gain.gain.exponentialRampToValueAtTime(0.001, at + (hard ? 0.22 : 0.15));
   osc.connect(gain).connect(ctx.destination);
-  osc.start(now);
-  osc.stop(now + 0.45);
+  osc.start(at);
+  osc.stop(at + 0.25);
+  // Click transient so the beat reads on laptop/phone speakers.
+  const click = ctx.createOscillator();
+  const cGain = ctx.createGain();
+  click.type = "square";
+  click.frequency.setValueAtTime(hard ? 2400 : 1800, at);
+  cGain.gain.setValueAtTime(hard ? 0.12 : 0.05, at);
+  cGain.gain.exponentialRampToValueAtTime(0.001, at + 0.02);
+  click.connect(cGain).connect(ctx.destination);
+  click.start(at);
+  click.stop(at + 0.03);
 }
 
-function playRiser(ctx: AudioContext, seconds: number) {
-  const now = ctx.currentTime;
+function hat(ctx: AudioContext, at: number) {
+  const len = Math.floor(ctx.sampleRate * 0.04);
+  const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / len);
+  const src = ctx.createBufferSource();
+  src.buffer = buf;
+  const hp = ctx.createBiquadFilter();
+  hp.type = "highpass";
+  hp.frequency.value = 7000;
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.1, at);
+  src.connect(hp).connect(gain).connect(ctx.destination);
+  src.start(at);
+}
+
+function riser(ctx: AudioContext, at: number, seconds: number) {
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
   osc.type = "sawtooth";
-  osc.frequency.setValueAtTime(70, now);
-  osc.frequency.exponentialRampToValueAtTime(220, now + seconds);
-  gain.gain.setValueAtTime(0.0001, now);
-  gain.gain.exponentialRampToValueAtTime(0.08, now + seconds);
-  gain.gain.exponentialRampToValueAtTime(0.001, now + seconds + 0.05);
+  osc.frequency.setValueAtTime(200, at);
+  osc.frequency.exponentialRampToValueAtTime(900, at + seconds);
+  gain.gain.setValueAtTime(0.0001, at);
+  gain.gain.exponentialRampToValueAtTime(0.14, at + seconds);
+  gain.gain.exponentialRampToValueAtTime(0.001, at + seconds + 0.05);
   osc.connect(gain).connect(ctx.destination);
-  osc.start(now);
-  osc.stop(now + seconds + 0.1);
+  osc.start(at);
+  osc.stop(at + seconds + 0.1);
+}
+
+function dropHit(ctx: AudioContext, at: number) {
+  kick(ctx, at, true);
+  // Mid-range stab so the drop is unmistakable on any speaker.
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = "square";
+  osc.frequency.setValueAtTime(440, at);
+  osc.frequency.exponentialRampToValueAtTime(180, at + 0.3);
+  gain.gain.setValueAtTime(0.22, at);
+  gain.gain.exponentialRampToValueAtTime(0.001, at + 0.35);
+  osc.connect(gain).connect(ctx.destination);
+  osc.start(at);
+  osc.stop(at + 0.4);
+  const len = Math.floor(ctx.sampleRate * 0.25);
+  const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / len) ** 2;
+  const src = ctx.createBufferSource();
+  src.buffer = buf;
+  const gain2 = ctx.createGain();
+  gain2.gain.setValueAtTime(0.25, at);
+  src.connect(gain2).connect(ctx.destination);
+  src.start(at);
 }
 
 type Phase = "idle" | "playing" | "done";
+
+const CAPTIONS: Array<{ at: number; text: string }> = [
+  { at: 0, text: "A runner starts up a road. The watch streams heart rate live." },
+  {
+    at: PLAN.detectAt,
+    text: "The engine looks ahead and sees the hill coming.",
+  },
+  {
+    at: PLAN.detectAt + 8,
+    text: "It picks the steepest moment of the climb — and schedules the beat-drop for exactly then.",
+  },
+  { at: PLAN.cueAt, text: "Music builds…" },
+  {
+    at: PLAN.dropAt,
+    text: "DROP — right as the hill bites hardest. That's the whole product.",
+  },
+];
 
 export default function AwdjDemo() {
   const [phase, setPhase] = useState<Phase>("idle");
@@ -103,10 +171,11 @@ export default function AwdjDemo() {
   const audio = useRef<AudioContext | null>(null);
   const fired = useRef<{ [k: string]: boolean }>({});
   const mutedRef = useRef(false);
+  const nextBeat = useRef(0);
 
   useEffect(() => () => cancelAnimationFrame(raf.current), []);
 
-  const start = () => {
+  const start = async () => {
     if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setClock(DURATION_S);
       setLog([
@@ -118,19 +187,41 @@ export default function AwdjDemo() {
       setPhase("done");
       return;
     }
-    if (!audio.current && !mutedRef.current) {
+    if (!audio.current) {
       audio.current = new AudioContext();
     }
+    // Autoplay policies can hand back a suspended context even inside a
+    // click handler (Safari); resume explicitly or there is silence.
+    if (audio.current.state === "suspended") {
+      await audio.current.resume();
+    }
     fired.current = {};
+    nextBeat.current = audio.current.currentTime + 0.1;
     setLog([`▸ onTimerStart → t=0 backdated`]);
     setPhase("playing");
     const begun = performance.now();
+    const toReal = (sessionSeconds: number) =>
+      (sessionSeconds / DURATION_S) * (REPLAY_MS / 1000);
     const step = (now: number) => {
       const sessionT = Math.min(
         DURATION_S,
         ((now - begun) / REPLAY_MS) * DURATION_S,
       );
       setClock(sessionT);
+
+      // Beat scheduler: soft four-on-the-floor before the drop, double-time
+      // with hats after it.
+      const ctx = audio.current;
+      if (ctx && !mutedRef.current) {
+        const afterDrop = sessionT >= PLAN.dropAt;
+        const interval = afterDrop ? 0.27 : 0.54;
+        while (nextBeat.current < ctx.currentTime + 0.25) {
+          kick(ctx, nextBeat.current, afterDrop);
+          if (afterDrop) hat(ctx, nextBeat.current + interval / 2);
+          nextBeat.current += interval;
+        }
+      }
+
       const fire = (key: string, at: number, fn: () => void) => {
         if (!fired.current[key] && sessionT >= at) {
           fired.current[key] = true;
@@ -145,15 +236,13 @@ export default function AwdjDemo() {
       );
       fire("cue", PLAN.cueAt, () => {
         setLog((l) => [...l, `▸ ${fmt(PLAN.cueAt)} deck B cued · riser armed`]);
-        if (audio.current && !mutedRef.current) {
-          const realSecondsToDrop =
-            ((PLAN.dropAt - PLAN.cueAt) / DURATION_S) * (REPLAY_MS / 1000);
-          playRiser(audio.current, realSecondsToDrop);
+        if (ctx && !mutedRef.current) {
+          riser(ctx, ctx.currentTime, toReal(PLAN.dropAt - PLAN.cueAt));
         }
       });
       fire("drop", PLAN.dropAt, () => {
         setLog((l) => [...l, `▸ ${fmt(PLAN.dropAt)} DROP — landed on the steepest meter`]);
-        if (audio.current && !mutedRef.current) playDrop(audio.current);
+        if (ctx && !mutedRef.current) dropHit(ctx, ctx.currentTime);
       });
       if (sessionT >= DURATION_S) {
         setPhase("done");
@@ -166,6 +255,10 @@ export default function AwdjDemo() {
 
   const playheadX = x(clock);
   const dropped = clock >= PLAN.dropAt;
+  const caption =
+    phase === "idle"
+      ? "30-second replay of a real-shaped run. Sound on — the drop is the point."
+      : [...CAPTIONS].reverse().find((c) => clock >= c.at)?.text ?? "";
 
   return (
     <div className="readout mt-6 px-5 py-4 font-mono text-[0.8125rem] leading-relaxed">
@@ -196,6 +289,9 @@ export default function AwdjDemo() {
         aria-label="Heart rate rising over an elevation profile; a music drop is scheduled for the steepest point of the climb"
       >
         <path d={gradePath} fill="var(--rule)" opacity="0.8" />
+        <text x={x(195)} y={H - 8} fill="var(--dust)" fontSize="11" textAnchor="middle">
+          the hill
+        </text>
         <path
           d={hrPath}
           fill="none"
@@ -204,6 +300,9 @@ export default function AwdjDemo() {
           strokeDasharray="1200"
           strokeDashoffset={phase === "idle" ? 1200 : 1200 - (clock / DURATION_S) * 1200}
         />
+        <text x="6" y={yHr(SESSION[0].hr) - 8} fill="var(--phosphor)" fontSize="11">
+          heart rate
+        </text>
         <line
           x1={x(PLAN.dropAt)}
           y1="0"
@@ -234,7 +333,12 @@ export default function AwdjDemo() {
         )}
       </svg>
 
-      <div className="mt-3 min-h-[6.5rem]">
+      {/* Plain-language layer: anyone can follow the story without the log. */}
+      <p className="mt-3 min-h-[3.4em] font-sans text-[0.9375rem] leading-snug text-bone">
+        {caption}
+      </p>
+
+      <div className="mt-3 min-h-[6.5rem] opacity-80">
         {phase === "idle" ? (
           <>
             <p>onTimerStart → t=0 backdated</p>
@@ -255,7 +359,7 @@ export default function AwdjDemo() {
         onClick={start}
         disabled={phase === "playing"}
       >
-        {phase === "idle" ? "▸ replay session" : phase === "playing" ? "replaying…" : "▸ replay again"}
+        {phase === "idle" ? "▸ replay a run" : phase === "playing" ? "replaying…" : "▸ replay again"}
       </button>
     </div>
   );
