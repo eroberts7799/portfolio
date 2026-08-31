@@ -1,6 +1,7 @@
 import BootLog from "./components/BootLog";
 import AwdjDemo from "./components/AwdjDemo";
 import Ecg from "./components/Ecg";
+import TrainWithMe from "./components/TrainWithMe";
 import vitals from "../data/vitals.json";
 
 const bootLines = [
@@ -162,6 +163,21 @@ export default function Home() {
               </div>
             </article>
           ))}
+        </section>
+
+        {/* Train with me */}
+        <section id="train" className="mt-28 sm:mt-36">
+          <p className="font-mono text-[0.75rem] uppercase tracking-[0.14em] text-dust">
+            log/04 · train with me
+          </p>
+          <h2 className="mt-4 font-display text-[2.25rem] font-semibold uppercase leading-tight tracking-[0.01em] sm:text-[3rem]">
+            I like this stuff better with company.
+          </h2>
+          <p className="mt-6 max-w-xl text-dust">
+            Everything above trains me. This one trains you. Thirty seconds,
+            one rule: don’t let go.
+          </p>
+          <TrainWithMe />
         </section>
 
         {/* Currently */}
