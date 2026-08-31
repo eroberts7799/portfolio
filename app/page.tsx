@@ -114,7 +114,7 @@ export default function Home() {
             below is real, running, and mine.
           </p>
           <div className="rise mt-10" style={{ animationDelay: "1200ms" }}>
-            <Ecg bpm={vitals.restingHr} wake={vitals.wake} bed={vitals.bed} />
+            <Ecg bpm={vitals.restingHr} />
           </div>
         </section>
 
