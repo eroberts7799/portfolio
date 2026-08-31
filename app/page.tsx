@@ -107,14 +107,14 @@ export default function Home() {
         </p>
         <p className="mt-6">
           <a
-            className="underline decoration-hairline underline-offset-4 transition-colors hover:decoration-olive focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-olive"
+            className="inline-block py-3 -my-3 underline decoration-hairline underline-offset-4 transition-colors hover:decoration-olive focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-olive"
             href="mailto:eroberts799@gmail.com"
           >
             eroberts799@gmail.com
           </a>
           <span className="mx-3 text-hairline">/</span>
           <a
-            className="underline decoration-hairline underline-offset-4 transition-colors hover:decoration-olive focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-olive"
+            className="inline-block py-3 -my-3 underline decoration-hairline underline-offset-4 transition-colors hover:decoration-olive focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-olive"
             href="https://github.com/eroberts7799"
           >
             github.com/eroberts7799
