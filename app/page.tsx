@@ -8,7 +8,7 @@ const bootLines = [
   "$ boot --profile ethan",
   `▸ resting.hr ........ ${vitals.restingHr} bpm`,
   `▸ sleep ............. ${vitals.sleep.hours}h (${vitals.sleep.score})`,
-  `▸ plan .............. ${vitals.plan} · feels-like ${vitals.feelsLikeC}°`,
+  `▸ last.session ...... ${vitals.lastSession}`,
   `▸ briefing.sent ..... ${vitals.briefingAt}`,
   "ready.",
 ];
@@ -118,7 +118,7 @@ export default function Home() {
             below is real, running, and mine.
           </p>
           <div className="rise mt-10" style={{ animationDelay: "1200ms" }}>
-            <Ecg bpm={vitals.restingHr} />
+            <Ecg bpm={vitals.restingHr} syncedDate={vitals.syncedDate} />
           </div>
         </section>
 

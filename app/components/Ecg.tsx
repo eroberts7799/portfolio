@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 const COMPLEX =
   "M0,30 L40,30 L48,26 L56,30 L66,30 L70,34 L76,4 L82,44 L88,30 L104,30 L114,24 L124,30 L150,30";
 
-export default function Ecg({ bpm }: { bpm: number }) {
+export default function Ecg({ bpm, syncedDate }: { bpm: number; syncedDate: string }) {
   const beatS = 60 / bpm;
   const [reduced, setReduced] = useState(false);
 
@@ -14,8 +14,7 @@ export default function Ecg({ bpm }: { bpm: number }) {
     setReduced(matchMedia("(prefers-reduced-motion: reduce)").matches);
   }, []);
 
-  const status =
-    "One morning from my log, replayed — the live feed stays between me and my watch.";
+  const status = `Real numbers, synced ${syncedDate} from my watch. Daily aggregates only — the rest stays between me and it.`;
 
   return (
     <div className="flex flex-wrap items-center gap-x-4 gap-y-2">

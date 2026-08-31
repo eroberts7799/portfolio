@@ -1,9 +1,10 @@
 {
-  "logDate": "a summer morning, 2026",
-  "restingHr": 52,
-  "sleep": { "hours": 7.5, "score": 91 },
-  "plan": "leg day",
-  "feelsLikeC": 27,
-  "briefingAt": "06:05",
-  "stub": true
+  "syncedDate": "2026-08-31",
+  "restingHr": 47,
+  "sleep": {
+    "hours": 8.4,
+    "score": 95
+  },
+  "lastSession": "strength training 56m + indoor cycling 30m",
+  "briefingAt": "06:05"
 }
