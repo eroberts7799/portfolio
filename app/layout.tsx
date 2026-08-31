@@ -1,6 +1,17 @@
 import type { Metadata } from "next";
-import { Instrument_Serif, Instrument_Sans, IBM_Plex_Mono } from "next/font/google";
+import {
+  Big_Shoulders,
+  Instrument_Serif,
+  Instrument_Sans,
+  IBM_Plex_Mono,
+} from "next/font/google";
 import "./globals.css";
+
+const display = Big_Shoulders({
+  weight: ["600", "700"],
+  subsets: ["latin"],
+  variable: "--font-display",
+});
 
 const serif = Instrument_Serif({
   weight: "400",
@@ -30,9 +41,9 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="scheme-dark">
       <body
-        className={`${serif.variable} ${sans.variable} ${mono.variable} antialiased`}
+        className={`${display.variable} ${serif.variable} ${sans.variable} ${mono.variable} antialiased`}
       >
         {children}
       </body>

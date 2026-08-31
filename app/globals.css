@@ -1,35 +1,41 @@
 @import "tailwindcss";
 
 :root {
-  --ink: #14171a;
-  --muted: #70766f;
-  --olive: #56613a;
-  --hairline: #e6e6df;
-  --paper: #ffffff;
+  --night: #0f110b;
+  --pit: #161910;
+  --bone: #e4e1d4;
+  --dust: #8d9181;
+  --phosphor: #a8b66a;
+  --rule: #262a1d;
+  --signal: #c4763b;
+  color-scheme: dark;
 }
 
 @theme inline {
-  --color-ink: var(--ink);
-  --color-muted: var(--muted);
-  --color-olive: var(--olive);
-  --color-hairline: var(--hairline);
-  --color-paper: var(--paper);
+  --color-night: var(--night);
+  --color-pit: var(--pit);
+  --color-bone: var(--bone);
+  --color-dust: var(--dust);
+  --color-phosphor: var(--phosphor);
+  --color-rule: var(--rule);
+  --color-signal: var(--signal);
+  --font-display: var(--font-display);
   --font-serif: var(--font-serif);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
 }
 
 body {
-  background: var(--paper);
-  color: var(--ink);
+  background: var(--night);
+  color: var(--bone);
   font-family: var(--font-sans), sans-serif;
   font-size: 1.0625rem;
   line-height: 1.7;
 }
 
 ::selection {
-  background: var(--olive);
-  color: var(--paper);
+  background: var(--phosphor);
+  color: var(--night);
 }
 
 /* Orchestrated load: hero lines rise once, in sequence. */
@@ -56,22 +62,51 @@ body {
   }
 }
 
-/* Live-telemetry signature: traces end in a breathing cursor. */
+/* Live-telemetry signature: readouts breathe with a phosphor cursor. */
 @keyframes blink {
   50% {
     opacity: 0;
   }
 }
 
-.trace::after {
+.cursor::after {
   content: "▍";
   margin-left: 0.125rem;
-  color: var(--olive);
+  color: var(--phosphor);
   animation: blink 1.2s steps(2, start) infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .trace::after {
+  .cursor::after {
+    animation: none;
+  }
+}
+
+/* Phosphor readout: text glows faintly, like a CRT at night. */
+.readout {
+  background: var(--pit);
+  color: var(--phosphor);
+  text-shadow: 0 0 8px color-mix(in srgb, var(--phosphor) 35%, transparent);
+}
+
+/* Live signal dot. */
+@keyframes pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.signal-dot {
+  display: inline-block;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 9999px;
+  background: var(--signal);
+  animation: pulse 2.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .signal-dot {
     animation: none;
   }
 }
