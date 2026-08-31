@@ -1,6 +1,7 @@
 import BootLog from "./components/BootLog";
 import AwdjDemo from "./components/AwdjDemo";
 import Ecg from "./components/Ecg";
+import Course from "./components/Course";
 import vitals from "../data/vitals.json";
 
 const bootLines = [
@@ -60,7 +61,9 @@ const projects = [
 
 export default function Home() {
   return (
-    <div className="mx-auto max-w-5xl px-6">
+    <div className="relative">
+      <Course />
+      <div className="mx-auto max-w-5xl px-6">
       {/* Nav */}
       <header className="flex items-center justify-between py-6 font-mono text-[0.8125rem]">
         <p className="text-bone">
@@ -180,7 +183,10 @@ export default function Home() {
 
         {/* Contact */}
         <footer className="mt-28 border-t border-rule py-14 sm:mt-36">
-          <p className="max-w-xl">
+          <p className="font-mono text-[0.75rem] uppercase tracking-[0.14em] text-dust">
+            log/end · finish line
+          </p>
+          <p className="mt-6 max-w-xl">
             The repos are private — they hold my training data and my music —
             but I’ll gladly walk through any of the code, live.
           </p>
@@ -201,6 +207,7 @@ export default function Home() {
           </p>
         </footer>
       </main>
+      </div>
     </div>
   );
 }
