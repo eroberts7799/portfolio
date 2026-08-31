@@ -26,7 +26,7 @@ const projects = [
     trace: 'step 4800 · loss 2.41 → sample: "the cat sat on the mat and"',
     body: [
       "A GPT built from first principles — tokenizer, attention, training loop, all of it — then supervised-fine-tuned into a small chat model. No frameworks doing the thinking.",
-      "Written as an explain-it-simply series: every mechanism gets a working implementation and a plain-language account of why it exists. The point wasn't the model; it was earning the right to reason about the tools I use every day.",
+      "Written as an explain-it-simply series: every mechanism gets a working implementation and a plain-language account of why it exists. The point wasn’t the model; it was earning the right to reason about the tools I use every day.",
     ],
     stack: "Python · PyTorch · tokenization → attention → SFT",
   },
@@ -103,7 +103,7 @@ export default function Home() {
       <footer className="rise border-t border-hairline pt-10" style={{ animationDelay: "740ms" }}>
         <p>
           The repos are private — they hold my training data and my music — but
-          I&apos;ll gladly walk through any of the code, live.
+          I’ll gladly walk through any of the code, live.
         </p>
         <p className="mt-6">
           <a
