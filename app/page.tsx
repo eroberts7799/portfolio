@@ -76,7 +76,10 @@ export default function Home() {
             <h2 className="mt-3 font-serif text-[2rem] leading-tight">
               {p.title}
             </h2>
-            <p className="mt-4 font-mono text-[0.8125rem] leading-relaxed text-muted">
+            <p className="trace mt-4 font-mono text-[0.8125rem] leading-relaxed text-ink/80">
+              <span aria-hidden="true" className="mr-2 select-none text-olive">
+                ❯
+              </span>
               {p.trace}
             </p>
             {p.body.map((para) => (
