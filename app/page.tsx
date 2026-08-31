@@ -111,7 +111,8 @@ export default function Home() {
             className="rise mt-8 max-w-xl text-dust"
             style={{ animationDelay: "1000ms" }}
           >
-            By day I invest in defense technology at CET Sandbox. The rest of
+            By day I build partnerships at CET Sandbox, teaming American
+            defense contractors with Israeli defense-tech startups. The rest of
             the time I ship systems that run my actual life — on my wrist, my
             phone, and a server that texts me before I wake up. Everything
             below is real, running, and mine.
@@ -173,11 +174,13 @@ export default function Home() {
             currently
           </p>
           <h2 className="mt-4 max-w-3xl font-display text-[2.25rem] font-semibold uppercase leading-tight tracking-[0.01em] sm:text-[3rem]">
-            Investing in defense technology at CET Sandbox.
+            Partnerships at CET Sandbox.
           </h2>
           <p className="mt-6 max-w-xl text-dust">
-            Scouting the builders rearming the West — from Tel Aviv, where the
-            proving ground is the neighborhood.
+            Teaming American defense contractors with Israeli defense-tech
+            startups — and writing the weekly newsletter that maps the
+            landscape — from Tel Aviv, where the proving ground is the
+            neighborhood.
           </p>
         </section>
 

@@ -34,7 +34,7 @@ const mono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   title: "Ethan Roberts — I build the software I want to live with",
   description:
-    "VC at CET Sandbox. Builder of an anticipatory music engine, an AI health coach that texts first, and a GPT from first principles.",
+    "Partnerships at CET Sandbox. Builder of an anticipatory music engine, an AI health coach that texts first, and a GPT from first principles.",
 };
 
 export default function RootLayout({
