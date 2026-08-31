@@ -39,9 +39,9 @@ const projects = [
     ],
     body: [
       "Every morning at 6:05 an agent reads my night — real sleep stages, resting HR, training load from my watch — checks my training plan and the Tel Aviv weather, and texts me exactly what to eat and when. I never open a dashboard.",
-      "Garmin data flows into a local SQLite system of record; an always-on agent on my own server writes the briefings and answers ad-hoc questions grounded in the actual numbers. Meal logs sync between machines through git. Built in a weekend, coaching me daily since.",
+      "Garmin data flows into a local SQLite system of record; an always-on agent on my own server writes the briefings and answers ad-hoc questions grounded in the actual numbers. Meal logs sync between machines through git. Built in a weekend, coaching me daily since — and the ingest layer is wearable-agnostic: it speaks both Garmin and the WHOOP v2 API.",
     ],
-    stack: "Python · SQLite · LLM agent · Telegram · self-hosted",
+    stack: "Python · SQLite · LLM agent · Telegram · Garmin + WHOOP v2 API",
   },
   {
     log: "LOG/03 · built to understand",
