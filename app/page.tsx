@@ -85,7 +85,7 @@ export default function Home() {
           </a>
           <a
             className="border border-rule px-4 py-2 text-bone transition-colors hover:border-phosphor hover:text-phosphor focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-phosphor"
-            href="mailto:eroberts799@gmail.com"
+            href="mailto:eroberts7799@gmail.com"
           >
             get in touch
           </a>
@@ -196,9 +196,9 @@ export default function Home() {
           <p className="mt-8 font-mono text-[0.8125rem]">
             <a
               className="inline-block py-3 -my-3 text-phosphor underline decoration-rule underline-offset-4 transition-colors hover:decoration-phosphor focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-phosphor"
-              href="mailto:eroberts799@gmail.com"
+              href="mailto:eroberts7799@gmail.com"
             >
-              eroberts799@gmail.com
+              eroberts7799@gmail.com
             </a>
             <span className="mx-3 text-rule">/</span>
             <a
