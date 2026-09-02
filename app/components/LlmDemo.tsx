@@ -11,10 +11,10 @@ const REPLAY_MS = 18000;
 
 const CHECKPOINTS: Array<{ step: number; loss: number; sample: string; caption: string }> = [
   { step: 0, loss: 10.31, sample: "vq;tk jj9 zpw&e qq lfx", caption: "A neural net starts knowing nothing. Literally random characters." },
-  { step: 600, loss: 6.87, sample: "e t aeo nh t s r he", caption: "It reads text, guesses the next character, gets corrected. Thousands of times a second." },
-  { step: 1600, loss: 4.1, sample: "the the and cat the sat", caption: "Watch it discover that words exist…" },
-  { step: 3000, loss: 3.02, sample: "the cat sat the mat on and it", caption: "…then that words have an order…" },
-  { step: 4800, loss: 2.41, sample: "the cat sat on the mat and looked out at the rain.", caption: "…then grammar. Same mechanism as ChatGPT — built from scratch to earn the right to reason about it." },
+  { step: 600, loss: 6.87, sample: "e t aeo nh t s r he", caption: "It reads health facts, guesses the next character, gets corrected. Thousands of times a second." },
+  { step: 1600, loss: 4.1, sample: "sleep the the heart and rate the", caption: "Watch it discover that words exist…" },
+  { step: 3000, loss: 3.02, sample: "deep sleep lowers the heart resting rate and", caption: "…then that words have an order…" },
+  { step: 4800, loss: 2.41, sample: "deep sleep lowers resting heart rate and helps the body recover.", caption: "…then it speaks health. Same mechanism as ChatGPT — built from scratch, trained on health facts." },
 ];
 
 function lossAt(step: number) {

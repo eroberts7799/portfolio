@@ -52,11 +52,11 @@ const projects = [
     demo: "llm",
     readout: [
       "step 4800 · loss 2.41 ↓",
-      'sample: "the cat sat on',
-      'the mat and" ▸ coherent',
+      'sample: "deep sleep lowers',
+      'resting hr" ▸ coherent',
     ],
     body: [
-      "A GPT built from first principles — tokenizer, attention, training loop, all of it — then supervised-fine-tuned into a small chat model. No frameworks doing the thinking.",
+      "A GPT built from first principles — tokenizer, attention, training loop, all of it — trained on a corpus of health facts, then supervised-fine-tuned into a small chat model. No frameworks doing the thinking.",
       "Written as an explain-it-simply series: every mechanism gets a working implementation and a plain-language account of why it exists. The point wasn’t the model; it was earning the right to reason about the tools I use every day.",
     ],
     stack: "Python · PyTorch · tokenization → attention → SFT",
