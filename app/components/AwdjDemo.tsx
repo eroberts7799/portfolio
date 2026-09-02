@@ -19,9 +19,6 @@ const SESSION: Sample[] = Array.from({ length: 61 }, (_, i) => {
 });
 
 const DURATION_S = SESSION[SESSION.length - 1].t; // 480s of session
-const REPLAY_MS = 30000; // compressed to 30s
-const W = 600;
-const H = 150;
 
 // Mini-scheduler mimicking the conductor: scan ahead for a sustained climb,
 // schedule the drop at the steepest point, cue the deck 12s prior.
@@ -38,8 +35,55 @@ function schedule(session: Sample[]) {
 
 const PLAN = schedule(SESSION)!;
 
+// Nonlinear replay clock: sprint through the flat, slow down for the story.
+// [sessionStart, sessionEnd, realSeconds]
+const SEGMENTS: Array<[number, number, number]> = [
+  [0, 130, 6], // warm-up flat - compressed hard
+  [130, PLAN.cueAt, 10], // climb detected, drop scheduled
+  [PLAN.cueAt, PLAN.dropAt, 6], // the build - give the riser room
+  [PLAN.dropAt, 250, 6], // the drop and the crest
+  [250, DURATION_S, 6], // descent
+];
+const REPLAY_S = SEGMENTS.reduce((a, s) => a + s[2], 0);
+
+function realFromSession(t: number) {
+  let real = 0;
+  for (const [s0, s1, dur] of SEGMENTS) {
+    if (t <= s0) return real;
+    if (t >= s1) real += dur;
+    else return real + ((t - s0) / (s1 - s0)) * dur;
+  }
+  return real;
+}
+
+function sessionFromReal(r: number) {
+  let acc = 0;
+  for (const [s0, s1, dur] of SEGMENTS) {
+    if (r <= acc + dur) return s0 + ((r - acc) / dur) * (s1 - s0);
+    acc += dur;
+  }
+  return DURATION_S;
+}
+
+// Captions live on the REAL clock, spaced so each one is actually readable.
+const CAPTIONS: Array<{ at: number; text: string }> = [
+  { at: 0.4, text: "A runner starts up a road. The watch streams heart rate live." },
+  {
+    at: realFromSession(PLAN.detectAt) + 0.6,
+    text: "The engine looks ahead, sees the hill coming — and schedules the beat-drop for its steepest moment.",
+  },
+  { at: realFromSession(PLAN.cueAt), text: "Music builds…" },
+  {
+    at: realFromSession(PLAN.dropAt),
+    text: "DROP — right as the hill bites hardest. That's the whole product.",
+  },
+];
+
 const fmt = (s: number) =>
   `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+
+const W = 600;
+const H = 150;
 
 function x(t: number) {
   return (t / DURATION_S) * W;
@@ -63,121 +107,124 @@ const gradePath =
   ).join(" ") +
   ` L${W},${H} Z`;
 
-// --- Audio: small synthesized workout mix (his real music stays private) ---
+// --- Audio ---------------------------------------------------------------
+// Real music: "Raving Energy" by Kevin MacLeod (incompetech.com), CC BY 4.0,
+// trimmed. The demo does what the engine does live: cruise the track through
+// a low-pass filter, sweep it open through the build, slam full-band at the
+// drop. Synth fallback if the track fails to load.
 
-function kick(ctx: AudioContext, at: number, hard: boolean) {
+function dropHit(ctx: AudioContext, at: number) {
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
   osc.type = "sine";
-  osc.frequency.setValueAtTime(hard ? 160 : 120, at);
-  osc.frequency.exponentialRampToValueAtTime(hard ? 55 : 50, at + 0.12);
-  gain.gain.setValueAtTime(hard ? 0.55 : 0.28, at);
-  gain.gain.exponentialRampToValueAtTime(0.001, at + (hard ? 0.22 : 0.15));
+  osc.frequency.setValueAtTime(160, at);
+  osc.frequency.exponentialRampToValueAtTime(55, at + 0.12);
+  gain.gain.setValueAtTime(0.6, at);
+  gain.gain.exponentialRampToValueAtTime(0.001, at + 0.25);
   osc.connect(gain).connect(ctx.destination);
   osc.start(at);
-  osc.stop(at + 0.25);
-  // Click transient so the beat reads on laptop/phone speakers.
-  const click = ctx.createOscillator();
-  const cGain = ctx.createGain();
-  click.type = "square";
-  click.frequency.setValueAtTime(hard ? 2400 : 1800, at);
-  cGain.gain.setValueAtTime(hard ? 0.12 : 0.05, at);
-  cGain.gain.exponentialRampToValueAtTime(0.001, at + 0.02);
-  click.connect(cGain).connect(ctx.destination);
-  click.start(at);
-  click.stop(at + 0.03);
-}
-
-function hat(ctx: AudioContext, at: number) {
-  const len = Math.floor(ctx.sampleRate * 0.04);
-  const buf = ctx.createBuffer(1, len, ctx.sampleRate);
-  const data = buf.getChannelData(0);
-  for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / len);
-  const src = ctx.createBufferSource();
-  src.buffer = buf;
-  const hp = ctx.createBiquadFilter();
-  hp.type = "highpass";
-  hp.frequency.value = 7000;
-  const gain = ctx.createGain();
-  gain.gain.setValueAtTime(0.1, at);
-  src.connect(hp).connect(gain).connect(ctx.destination);
-  src.start(at);
-}
-
-function riser(ctx: AudioContext, at: number, seconds: number) {
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.type = "sawtooth";
-  osc.frequency.setValueAtTime(200, at);
-  osc.frequency.exponentialRampToValueAtTime(900, at + seconds);
-  gain.gain.setValueAtTime(0.0001, at);
-  gain.gain.exponentialRampToValueAtTime(0.14, at + seconds);
-  gain.gain.exponentialRampToValueAtTime(0.001, at + seconds + 0.05);
-  osc.connect(gain).connect(ctx.destination);
-  osc.start(at);
-  osc.stop(at + seconds + 0.1);
-}
-
-function dropHit(ctx: AudioContext, at: number) {
-  kick(ctx, at, true);
-  // Mid-range stab so the drop is unmistakable on any speaker.
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.type = "square";
-  osc.frequency.setValueAtTime(440, at);
-  osc.frequency.exponentialRampToValueAtTime(180, at + 0.3);
-  gain.gain.setValueAtTime(0.22, at);
-  gain.gain.exponentialRampToValueAtTime(0.001, at + 0.35);
-  osc.connect(gain).connect(ctx.destination);
-  osc.start(at);
-  osc.stop(at + 0.4);
+  osc.stop(at + 0.3);
   const len = Math.floor(ctx.sampleRate * 0.25);
   const buf = ctx.createBuffer(1, len, ctx.sampleRate);
   const data = buf.getChannelData(0);
-  for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / len) ** 2;
+  for (let i = 0; i < len; i++)
+    data[i] = (Math.random() * 2 - 1) * (1 - i / len) ** 2;
   const src = ctx.createBufferSource();
   src.buffer = buf;
-  const gain2 = ctx.createGain();
-  gain2.gain.setValueAtTime(0.25, at);
-  src.connect(gain2).connect(ctx.destination);
+  const g2 = ctx.createGain();
+  g2.gain.setValueAtTime(0.3, at);
+  src.connect(g2).connect(ctx.destination);
   src.start(at);
+}
+
+function synthFallback(ctx: AudioContext, t0: number, dropR: number, endR: number) {
+  // Minimal beat if the track can't load: kicks to the drop, double-time after.
+  for (let r = 0; r < endR; r += r < dropR ? 0.54 : 0.27) {
+    const at = t0 + r;
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(r < dropR ? 120 : 160, at);
+    osc.frequency.exponentialRampToValueAtTime(50, at + 0.12);
+    g.gain.setValueAtTime(r < dropR ? 0.25 : 0.45, at);
+    g.gain.exponentialRampToValueAtTime(0.001, at + 0.15);
+    osc.connect(g).connect(ctx.destination);
+    osc.start(at);
+    osc.stop(at + 0.2);
+  }
+  dropHit(ctx, t0 + dropR);
 }
 
 type Phase = "idle" | "playing" | "done";
 
-const CAPTIONS: Array<{ at: number; text: string }> = [
-  { at: 0, text: "A runner starts up a road. The watch streams heart rate live." },
-  {
-    at: PLAN.detectAt,
-    text: "The engine looks ahead and sees the hill coming.",
-  },
-  {
-    at: PLAN.detectAt + 8,
-    text: "It picks the steepest moment of the climb — and schedules the beat-drop for exactly then.",
-  },
-  { at: PLAN.cueAt, text: "Music builds…" },
-  {
-    at: PLAN.dropAt,
-    text: "DROP — right as the hill bites hardest. That's the whole product.",
-  },
-];
-
 export default function AwdjDemo() {
   const [phase, setPhase] = useState<Phase>("idle");
-  const [clock, setClock] = useState(0);
+  const [clock, setClock] = useState(0); // session seconds
+  const [elapsed, setElapsed] = useState(0); // real seconds
   const [log, setLog] = useState<string[]>([]);
   const [muted, setMuted] = useState(false);
   const raf = useRef(0);
   const audio = useRef<AudioContext | null>(null);
+  const trackBuf = useRef<AudioBuffer | null>(null);
+  const master = useRef<GainNode | null>(null);
+  const playing = useRef<AudioBufferSourceNode | null>(null);
   const fired = useRef<{ [k: string]: boolean }>({});
   const mutedRef = useRef(false);
-  const nextBeat = useRef(0);
 
-  useEffect(() => () => cancelAnimationFrame(raf.current), []);
+  useEffect(
+    () => () => {
+      cancelAnimationFrame(raf.current);
+      try {
+        playing.current?.stop();
+      } catch {}
+    },
+    [],
+  );
+
+  const startAudio = async (ctx: AudioContext) => {
+    const dropR = realFromSession(PLAN.dropAt);
+    const cueR = realFromSession(PLAN.cueAt);
+    if (!trackBuf.current) {
+      try {
+        const res = await fetch("/awdj-track.mp3");
+        trackBuf.current = await ctx.decodeAudioData(await res.arrayBuffer());
+      } catch {
+        synthFallback(ctx, ctx.currentTime + 0.05, dropR, REPLAY_S);
+        return;
+      }
+    }
+    const t0 = ctx.currentTime + 0.05;
+    const src = ctx.createBufferSource();
+    src.buffer = trackBuf.current;
+    const filter = ctx.createBiquadFilter();
+    filter.type = "lowpass";
+    const gain = ctx.createGain();
+    master.current = gain;
+    src.connect(filter).connect(gain).connect(ctx.destination);
+    playing.current = src;
+
+    // Cruise: track ducked behind a closed filter.
+    filter.frequency.setValueAtTime(650, t0);
+    gain.gain.setValueAtTime(0.35, t0);
+    // The build: sweep the filter open across the whole cue-to-drop window.
+    filter.frequency.setValueAtTime(650, t0 + cueR);
+    filter.frequency.exponentialRampToValueAtTime(14000, t0 + dropR);
+    gain.gain.setValueAtTime(0.35, t0 + cueR);
+    gain.gain.linearRampToValueAtTime(0.55, t0 + dropR - 0.05);
+    // The drop: full band, full volume, impact.
+    gain.gain.setValueAtTime(0.95, t0 + dropR);
+    dropHit(ctx, t0 + dropR);
+    // Land the ending.
+    gain.gain.setValueAtTime(0.95, t0 + REPLAY_S - 1.5);
+    gain.gain.linearRampToValueAtTime(0.0001, t0 + REPLAY_S);
+    src.start(t0, 0);
+    src.stop(t0 + REPLAY_S + 0.2);
+  };
 
   const start = async () => {
     if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setClock(DURATION_S);
+      setElapsed(REPLAY_S);
       setLog([
         `▸ onTimerStart → t=0 backdated`,
         `▸ ${fmt(PLAN.detectAt)} climb detected · grade rising`,
@@ -187,41 +234,18 @@ export default function AwdjDemo() {
       setPhase("done");
       return;
     }
-    if (!audio.current) {
-      audio.current = new AudioContext();
-    }
-    // Autoplay policies can hand back a suspended context even inside a
-    // click handler (Safari); resume explicitly or there is silence.
-    if (audio.current.state === "suspended") {
-      await audio.current.resume();
-    }
+    if (!audio.current) audio.current = new AudioContext();
+    if (audio.current.state === "suspended") await audio.current.resume();
     fired.current = {};
-    nextBeat.current = audio.current.currentTime + 0.1;
     setLog([`▸ onTimerStart → t=0 backdated`]);
     setPhase("playing");
+    if (!mutedRef.current) await startAudio(audio.current);
     const begun = performance.now();
-    const toReal = (sessionSeconds: number) =>
-      (sessionSeconds / DURATION_S) * (REPLAY_MS / 1000);
     const step = (now: number) => {
-      const sessionT = Math.min(
-        DURATION_S,
-        ((now - begun) / REPLAY_MS) * DURATION_S,
-      );
+      const realT = Math.min(REPLAY_S, (now - begun) / 1000);
+      const sessionT = sessionFromReal(realT);
+      setElapsed(realT);
       setClock(sessionT);
-
-      // Beat scheduler: soft four-on-the-floor before the drop, double-time
-      // with hats after it.
-      const ctx = audio.current;
-      if (ctx && !mutedRef.current) {
-        const afterDrop = sessionT >= PLAN.dropAt;
-        const interval = afterDrop ? 0.27 : 0.54;
-        while (nextBeat.current < ctx.currentTime + 0.25) {
-          kick(ctx, nextBeat.current, afterDrop);
-          if (afterDrop) hat(ctx, nextBeat.current + interval / 2);
-          nextBeat.current += interval;
-        }
-      }
-
       const fire = (key: string, at: number, fn: () => void) => {
         if (!fired.current[key] && sessionT >= at) {
           fired.current[key] = true;
@@ -234,17 +258,13 @@ export default function AwdjDemo() {
       fire("sched", PLAN.detectAt + 8, () =>
         setLog((l) => [...l, `▸ drop scheduled ${fmt(PLAN.dropAt)} · steepest meter`]),
       );
-      fire("cue", PLAN.cueAt, () => {
-        setLog((l) => [...l, `▸ ${fmt(PLAN.cueAt)} deck B cued · riser armed`]);
-        if (ctx && !mutedRef.current) {
-          riser(ctx, ctx.currentTime, toReal(PLAN.dropAt - PLAN.cueAt));
-        }
-      });
-      fire("drop", PLAN.dropAt, () => {
-        setLog((l) => [...l, `▸ ${fmt(PLAN.dropAt)} DROP — landed on the steepest meter`]);
-        if (ctx && !mutedRef.current) dropHit(ctx, ctx.currentTime);
-      });
-      if (sessionT >= DURATION_S) {
+      fire("cue", PLAN.cueAt, () =>
+        setLog((l) => [...l, `▸ ${fmt(PLAN.cueAt)} deck B cued · filter opening`]),
+      );
+      fire("drop", PLAN.dropAt, () =>
+        setLog((l) => [...l, `▸ ${fmt(PLAN.dropAt)} DROP — landed on the steepest meter`]),
+      );
+      if (realT >= REPLAY_S) {
         setPhase("done");
         return;
       }
@@ -253,12 +273,24 @@ export default function AwdjDemo() {
     raf.current = requestAnimationFrame(step);
   };
 
+  const toggleMute = () => {
+    mutedRef.current = !mutedRef.current;
+    setMuted(mutedRef.current);
+    if (master.current && audio.current) {
+      master.current.gain.setTargetAtTime(
+        mutedRef.current ? 0 : 0.55,
+        audio.current.currentTime,
+        0.05,
+      );
+    }
+  };
+
   const playheadX = x(clock);
   const dropped = clock >= PLAN.dropAt;
   const caption =
     phase === "idle"
-      ? "30-second replay of a real-shaped run. Sound on — the drop is the point."
-      : [...CAPTIONS].reverse().find((c) => clock >= c.at)?.text ?? "";
+      ? "30-second replay of a real-shaped run, set to real music. Sound on — the drop is the point."
+      : [...CAPTIONS].reverse().find((c) => elapsed >= c.at)?.text ?? "";
 
   return (
     <div className="readout mt-6 px-5 py-4 font-mono text-[0.8125rem] leading-relaxed">
@@ -270,10 +302,7 @@ export default function AwdjDemo() {
           {phase !== "idle" && (
             <button
               className="opacity-70 transition-opacity hover:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-phosphor"
-              onClick={() => {
-                mutedRef.current = !mutedRef.current;
-                setMuted(mutedRef.current);
-              }}
+              onClick={toggleMute}
             >
               {muted ? "sound off" : "sound on"}
             </button>
@@ -354,13 +383,18 @@ export default function AwdjDemo() {
         )}
       </div>
 
-      <button
-        className="mt-4 border border-rule px-4 py-2 uppercase tracking-[0.14em] text-[0.6875rem] transition-colors hover:border-phosphor focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-phosphor"
-        onClick={start}
-        disabled={phase === "playing"}
-      >
-        {phase === "idle" ? "▸ replay a run" : phase === "playing" ? "replaying…" : "▸ replay again"}
-      </button>
+      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
+        <button
+          className="border border-rule px-4 py-2 uppercase tracking-[0.14em] text-[0.6875rem] transition-colors hover:border-phosphor focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-phosphor"
+          onClick={start}
+          disabled={phase === "playing"}
+        >
+          {phase === "idle" ? "▸ replay a run" : phase === "playing" ? "replaying…" : "▸ replay again"}
+        </button>
+        <p className="text-[0.625rem] uppercase tracking-[0.12em] opacity-40">
+          music: “Raving Energy” — Kevin MacLeod (incompetech.com) · CC BY 4.0
+        </p>
+      </div>
     </div>
   );
 }
