@@ -75,7 +75,7 @@ const CAPTIONS: Array<{ at: number; text: string }> = [
   { at: realFromSession(PLAN.cueAt), text: "Music builds…" },
   {
     at: realFromSession(PLAN.dropAt),
-    text: "DROP — right as the hill bites hardest. That's the whole product.",
+    text: "DROP — right as the hill bites hardest. Any app can react to your run. This one saw it coming.",
   },
 ];
 
