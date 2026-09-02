@@ -1,5 +1,7 @@
 import BootLog from "./components/BootLog";
 import AwdjDemo from "./components/AwdjDemo";
+import CoachDemo from "./components/CoachDemo";
+import LlmDemo from "./components/LlmDemo";
 import Ecg from "./components/Ecg";
 import Course from "./components/Course";
 import vitals from "../data/vitals.json";
@@ -17,7 +19,7 @@ const projects = [
   {
     log: "LOG/01 · runs on my wrist",
     title: "AI Workout DJ",
-    demo: true,
+    demo: "awdj",
     readout: [
       "onTimerStart → t=0 backdated",
       "HR 162 → drop scheduled 03:12",
@@ -32,6 +34,7 @@ const projects = [
   {
     log: "LOG/02 · texts me first",
     title: "Health Coach",
+    demo: "coach",
     readout: [
       "06:05 → sleep 7.5h (91)",
       "leg day · feels-like 27°",
@@ -46,6 +49,7 @@ const projects = [
   {
     log: "LOG/03 · built to understand",
     title: "LLM from scratch",
+    demo: "llm",
     readout: [
       "step 4800 · loss 2.41 ↓",
       'sample: "the cat sat on',
@@ -139,8 +143,12 @@ export default function Home() {
                 <h2 className="mt-3 font-display text-[2.25rem] font-semibold uppercase leading-none tracking-[0.01em]">
                   {p.title}
                 </h2>
-                {p.demo ? (
+                {p.demo === "awdj" ? (
                   <AwdjDemo />
+                ) : p.demo === "coach" ? (
+                  <CoachDemo />
+                ) : p.demo === "llm" ? (
+                  <LlmDemo />
                 ) : (
                   <div className="readout mt-6 px-5 py-4 font-mono text-[0.8125rem] leading-relaxed">
                     {p.readout.map((line, i) => (
