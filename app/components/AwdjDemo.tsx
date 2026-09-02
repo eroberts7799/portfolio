@@ -108,10 +108,10 @@ const gradePath =
   ` L${W},${H} Z`;
 
 // --- Audio ---------------------------------------------------------------
-// Real music: "Raving Energy" by Kevin MacLeod (incompetech.com), CC BY 4.0,
-// trimmed. The demo does what the engine does live: cruise the track through
-// a low-pass filter, sweep it open through the build, slam full-band at the
-// drop. Synth fallback if the track fails to load.
+// Real music via Mixkit (mixkit.co, Mixkit License — free for web projects).
+// The track has a genuine EDM arrangement; it is trimmed so its own drop
+// detonates exactly at the engine's scheduled moment (replay t=22s). A
+// layered impact hit syncs the slam; synth fallback if the load fails.
 
 function dropHit(ctx: AudioContext, at: number) {
   const osc = ctx.createOscillator();
@@ -196,26 +196,19 @@ export default function AwdjDemo() {
     const t0 = ctx.currentTime + 0.05;
     const src = ctx.createBufferSource();
     src.buffer = trackBuf.current;
-    const filter = ctx.createBiquadFilter();
-    filter.type = "lowpass";
     const gain = ctx.createGain();
     master.current = gain;
-    src.connect(filter).connect(gain).connect(ctx.destination);
+    src.connect(gain).connect(ctx.destination);
     playing.current = src;
 
-    // Cruise: track ducked behind a closed filter.
-    filter.frequency.setValueAtTime(650, t0);
-    gain.gain.setValueAtTime(0.35, t0);
-    // The build: sweep the filter open across the whole cue-to-drop window.
-    filter.frequency.setValueAtTime(650, t0 + cueR);
-    filter.frequency.exponentialRampToValueAtTime(14000, t0 + dropR);
-    gain.gain.setValueAtTime(0.35, t0 + cueR);
-    gain.gain.linearRampToValueAtTime(0.55, t0 + dropR - 0.05);
-    // The drop: full band, full volume, impact.
-    gain.gain.setValueAtTime(0.95, t0 + dropR);
+    // The track is pre-cut so its own intro/build fills the cruise and its
+    // real drop lands at exactly t0 + dropR. Just ride the volume.
+    void cueR;
+    gain.gain.setValueAtTime(0.85, t0);
+    // Layered impact so the slam is physical even on laptop speakers.
     dropHit(ctx, t0 + dropR);
     // Land the ending.
-    gain.gain.setValueAtTime(0.95, t0 + REPLAY_S - 1.5);
+    gain.gain.setValueAtTime(0.85, t0 + REPLAY_S - 1.5);
     gain.gain.linearRampToValueAtTime(0.0001, t0 + REPLAY_S);
     src.start(t0, 0);
     src.stop(t0 + REPLAY_S + 0.2);
@@ -278,7 +271,7 @@ export default function AwdjDemo() {
     setMuted(mutedRef.current);
     if (master.current && audio.current) {
       master.current.gain.setTargetAtTime(
-        mutedRef.current ? 0 : 0.55,
+        mutedRef.current ? 0 : 0.85,
         audio.current.currentTime,
         0.05,
       );
@@ -392,7 +385,7 @@ export default function AwdjDemo() {
           {phase === "idle" ? "▸ replay a run" : phase === "playing" ? "replaying…" : "▸ replay again"}
         </button>
         <p className="text-[0.625rem] uppercase tracking-[0.12em] opacity-40">
-          music: “Raving Energy” — Kevin MacLeod (incompetech.com) · CC BY 4.0
+          music via Mixkit (mixkit.co) · Mixkit License
         </p>
       </div>
     </div>
