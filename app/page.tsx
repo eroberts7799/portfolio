@@ -30,6 +30,7 @@ const projects = [
       "A Garmin Connect IQ field streams the run off the watch in real time; a TypeScript conductor is the source of truth, ported line-for-line to Swift for iOS with a parity suite replaying real sessions. Engine changes ship with a verdict from a critic that renders and judges actual audio — not vibes.",
     ],
     stack: "TypeScript · Swift · Monkey C (Garmin) · audio DSP · Vercel",
+    repo: "https://github.com/eroberts7799/ai-workout-dj",
   },
   {
     log: "LOG/02 · texts me first",
@@ -45,6 +46,7 @@ const projects = [
       "Garmin data flows into a local SQLite system of record; an always-on agent on my own server writes the briefings and answers ad-hoc questions grounded in the actual numbers. Meal logs sync between machines through git. Built in a weekend, coaching me daily since — and the ingest layer is wearable-agnostic: it speaks both Garmin and the WHOOP v2 API.",
     ],
     stack: "Python · SQLite · LLM agent · Telegram · Garmin + WHOOP v2 API",
+    repo: "https://github.com/eroberts7799/health-tracker",
   },
   {
     log: "LOG/03 · built to understand",
@@ -60,6 +62,7 @@ const projects = [
       "Written as an explain-it-simply series: every mechanism gets a working implementation and a plain-language account of why it exists. The point wasn’t the model; it was earning the right to reason about the tools I use every day.",
     ],
     stack: "Python · PyTorch · tokenization → attention → SFT",
+    repo: "https://github.com/eroberts7799/llm-from-scratch",
   },
 ];
 
@@ -174,6 +177,14 @@ export default function Home() {
                 <p className="mt-6 font-mono text-[0.8125rem] text-dust">
                   {p.stack}
                 </p>
+                <p className="mt-2 font-mono text-[0.8125rem]">
+                  <a
+                    className="inline-block py-2 -my-2 text-phosphor underline decoration-rule underline-offset-4 transition-colors hover:decoration-phosphor focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-phosphor"
+                    href={p.repo}
+                  >
+                    source ↗
+                  </a>
+                </p>
               </div>
             </article>
           ))}
@@ -202,8 +213,8 @@ export default function Home() {
             log/end · finish line
           </p>
           <p className="mt-6 max-w-xl">
-            The repos are private — they hold my training data and my music —
-            but I’ll gladly walk through any of the code, live.
+            The code is public; the training data and the music stay with me.
+            I’ll gladly walk through any of it, live.
           </p>
           <p className="mt-8 font-mono text-[0.8125rem]">
             <a
