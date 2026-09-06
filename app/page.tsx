@@ -72,7 +72,7 @@ export default function Home() {
       <header className="flex items-center justify-between py-6 font-mono text-[0.8125rem]">
         <p className="text-bone">
           <span className="signal-dot mr-2 align-middle" aria-hidden="true" />
-          ethan.roberts — tel aviv
+          ethan.roberts — tel aviv → boston, nov 2026
         </p>
         <nav className="flex items-center gap-6">
           <a
@@ -116,10 +116,13 @@ export default function Home() {
             style={{ animationDelay: "1000ms" }}
           >
             By day I build partnerships at CET Sandbox, teaming American
-            defense contractors with Israeli defense-tech startups. The rest of
-            the time I ship systems that run my actual life — on my wrist, my
-            phone, and a server that texts me before I wake up. Everything
-            below is real, running, and mine.
+            defense contractors with Israeli defense-tech startups. Somewhere
+            in that chapter I realized what I actually want to work on is
+            health tech, so I started building it myself: systems that run my
+            own training, sleep, and fueling — on my wrist, my phone, and a
+            server that texts me before I wake up. I’m relocating to Boston in
+            November 2026 to do this for real. Everything below is real,
+            running, and mine.
           </p>
           <div className="rise mt-10" style={{ animationDelay: "1200ms" }}>
             <Ecg bpm={vitals.restingHr} syncedDate={vitals.syncedDate} />
@@ -188,7 +191,8 @@ export default function Home() {
             Teaming American defense contractors with Israeli defense-tech
             startups — and writing the weekly newsletter that maps the
             landscape — from Tel Aviv, where the proving ground is the
-            neighborhood.
+            neighborhood. Next: Boston, November 2026, building health tech
+            full time.
           </p>
         </section>
 
