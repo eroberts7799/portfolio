@@ -77,7 +77,7 @@ export default function Home() {
           <span className="signal-dot mr-2 align-middle" aria-hidden="true" />
           ethan.roberts — tel aviv → boston, nov 2026
         </p>
-        <nav className="flex items-center gap-6">
+        <nav className="flex shrink-0 items-center gap-4 sm:gap-6">
           <a
             className="hidden text-dust transition-colors hover:text-bone focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-phosphor sm:inline"
             href="#work"
@@ -97,7 +97,7 @@ export default function Home() {
             resume
           </a>
           <a
-            className="border border-rule px-4 py-2 text-bone transition-colors hover:border-phosphor hover:text-phosphor focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-phosphor"
+            className="whitespace-nowrap border border-rule px-4 py-2 text-bone transition-colors hover:border-phosphor hover:text-phosphor focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-phosphor"
             href="mailto:eroberts7799@gmail.com"
           >
             get in touch
