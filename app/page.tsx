@@ -91,6 +91,12 @@ export default function Home() {
             currently
           </a>
           <a
+            className="text-dust transition-colors hover:text-bone focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-phosphor"
+            href="/resume.pdf"
+          >
+            resume
+          </a>
+          <a
             className="border border-rule px-4 py-2 text-bone transition-colors hover:border-phosphor hover:text-phosphor focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-phosphor"
             href="mailto:eroberts7799@gmail.com"
           >
