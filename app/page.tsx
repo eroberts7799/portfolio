@@ -75,7 +75,7 @@ export default function Home() {
       <header className="flex items-center justify-between py-6 font-mono text-[0.8125rem]">
         <p className="text-bone">
           <span className="signal-dot mr-2 align-middle" aria-hidden="true" />
-          ethan.roberts — tel aviv → boston, nov 2026
+          ethan.roberts<span className="hidden sm:inline"> — tel aviv → boston, nov 2026</span>
         </p>
         <nav className="flex shrink-0 items-center gap-4 sm:gap-6">
           <a
