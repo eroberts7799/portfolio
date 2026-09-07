@@ -5,7 +5,8 @@
 # with the same commit history minus the excluded paths.
 #
 #   health-tracker-private -> health-tracker   (drops meals.jsonl, NOTES.md,
-#                                               lifts.jsonl; scrubs chat id)
+#                                               lifts.jsonl, the personal-health-os
+#                                               design doc; scrubs chat id)
 #   ai-workout-dj-private  -> ai-workout-dj    (drops ios/Resources/*.mp3)
 #
 # Usage: scripts/republish-public-mirrors.sh [health|awdj|all]   (default: all)
@@ -38,7 +39,7 @@ mirror() {
 
 if [ "$WHICH" = all ] || [ "$WHICH" = health ]; then
   mirror health-tracker-private health-tracker \
-    'git rm -q -r --cached --ignore-unmatch meals.jsonl NOTES.md lifts.jsonl' \
+    'git rm -q -r --cached --ignore-unmatch meals.jsonl NOTES.md lifts.jsonl docs/designs/personal-health-os.md' \
     'sed -i "" "s/TELEGRAM_CHAT_ID=[0-9]*/TELEGRAM_CHAT_ID=<your-chat-id>/g" HERMES.md 2>/dev/null || true' \
     'sed "s/, 64kg LBM//; s/64kg LBM//"'
 fi
