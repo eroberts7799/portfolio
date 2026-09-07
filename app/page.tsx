@@ -26,7 +26,7 @@ const projects = [
       "deck B cued ▸ armed",
     ],
     body: [
-      "Music apps react. This one anticipates: a deterministic choreography engine reads live heart rate, GPS, and the structure of a planned workout, and lands the drop at the moment the hill does.",
+      "Music apps react. This one anticipates: a deterministic choreography engine reads live heart rate, GPS, and the structure of a planned workout, and lands the drop where the hill or interval starts.",
       "A Garmin Connect IQ field streams the run off the watch in real time; a TypeScript conductor is the source of truth, ported line-for-line to Swift for iOS with a parity suite replaying real sessions. Engine changes ship with a verdict from a critic that renders and judges actual audio — not vibes.",
     ],
     stack: "TypeScript · Swift · Monkey C (Garmin) · audio DSP · Vercel",
