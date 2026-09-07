@@ -230,6 +230,13 @@ export default function Home() {
             >
               github.com/eroberts7799
             </a>
+            <span className="mx-3 text-rule">/</span>
+            <a
+              className="inline-block py-3 -my-3 text-dust underline decoration-rule underline-offset-4 transition-colors hover:text-bone hover:decoration-phosphor focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-phosphor"
+              href="/resume.pdf"
+            >
+              resume (pdf)
+            </a>
           </p>
         </footer>
       </main>
