@@ -1,10 +1,10 @@
 {
-  "syncedDate": "2026-09-12",
-  "restingHr": 45,
+  "syncedDate": "2026-09-13",
+  "restingHr": 49,
   "sleep": {
-    "hours": 7.9,
-    "score": 98
+    "hours": 5.3,
+    "score": 63
   },
-  "lastSession": "running 60m",
+  "lastSession": "running 90m",
   "briefingAt": "06:05"
 }
