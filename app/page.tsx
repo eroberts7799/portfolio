@@ -29,8 +29,9 @@ const projects = [
       "Music apps react. This one anticipates: a deterministic choreography engine reads live heart rate, GPS, and the structure of a planned workout, and lands the drop where the hill or interval starts.",
       "A Garmin Connect IQ field streams the run off the watch in real time; a TypeScript conductor is the source of truth, ported line-for-line to Swift for iOS with a parity suite replaying real sessions. Engine changes ship with a verdict from a critic that renders and judges actual audio — not vibes.",
     ],
-    stack: "TypeScript · Swift · Monkey C (Garmin) · audio DSP · Vercel",
+    stack: "TypeScript · Swift · Monkey C (Garmin) · Spotify + Strava APIs · audio DSP · Vercel",
     repo: "https://github.com/eroberts7799/ai-workout-dj",
+    store: "https://apps.garmin.com/apps/ac986a1c-0f2b-4ea0-88d5-a9320d29195f",
   },
   {
     log: "LOG/02 · texts me first",
@@ -190,6 +191,14 @@ export default function Home() {
                   >
                     source ↗
                   </a>
+                  {"store" in p && (
+                    <a
+                      className="ml-6 inline-block py-2 -my-2 text-phosphor underline decoration-rule underline-offset-4 transition-colors hover:decoration-phosphor focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-phosphor"
+                      href={p.store}
+                    >
+                      live on Garmin Connect IQ ↗
+                    </a>
+                  )}
                 </p>
               </div>
             </article>
