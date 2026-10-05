@@ -78,7 +78,7 @@ export default async function OpenGraphImage() {
             letterSpacing: 2,
           }}
         >
-          <span>ethan.roberts — tel aviv → boston, nov 2026</span>
+          <span>ethan.roberts — tel aviv → u.s., nov 2026</span>
           <span style={{ color: PHOSPHOR }}>resting.hr {vitals.restingHr} bpm</span>
         </div>
 

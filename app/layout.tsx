@@ -34,7 +34,7 @@ const mono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   title: "Ethan Roberts — I build the software I want to live with",
   description:
-    "Partnerships at CET Sandbox, relocating to Boston in November 2026 to build health tech. Builder of an anticipatory music engine, an AI health coach that texts first, and a GPT from first principles.",
+    "Partnerships at CET Sandbox, relocating to the U.S. in November 2026 to build health tech. Builder of an anticipatory music engine, an AI health coach that texts first, and a GPT from first principles.",
   metadataBase: new URL("https://ethanroberts.dev"),
   openGraph: {
     title: "Ethan Roberts — I build the software I want to live with",
