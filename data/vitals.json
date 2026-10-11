@@ -1,10 +1,10 @@
 {
-  "syncedDate": "2026-10-10",
-  "restingHr": 49,
+  "syncedDate": "2026-10-11",
+  "restingHr": 52,
   "sleep": {
-    "hours": 8.7,
-    "score": 86
+    "hours": 8.9,
+    "score": 85
   },
-  "lastSession": "hiking 350m",
+  "lastSession": "hiking 198m + hiking 126m",
   "briefingAt": "06:05"
 }
