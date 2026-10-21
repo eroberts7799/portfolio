@@ -76,7 +76,7 @@ export default function Home() {
       <header className="flex items-center justify-between py-6 font-mono text-[0.8125rem]">
         <p className="text-bone">
           <span className="signal-dot mr-2 align-middle" aria-hidden="true" />
-          ethan.roberts<span className="hidden lg:inline"> — tel aviv → u.s., nov 2026</span>
+          ethan.roberts<span className="hidden lg:inline"> — tel aviv → u.s., dec 2026</span>
         </p>
         <nav className="flex shrink-0 items-center gap-4 sm:gap-6">
           <a
@@ -93,7 +93,9 @@ export default function Home() {
           </a>
           <a
             className="text-dust transition-colors hover:text-bone focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-phosphor"
-            href="/resume.pdf"
+            href="https://docs.google.com/document/d/1-icQWbufuI-crBPaI88yzBOv45khEggSWBXQxw7kidg/edit?usp=sharing"
+            target="_blank"
+            rel="noopener noreferrer"
           >
             resume
           </a>
@@ -131,7 +133,7 @@ export default function Home() {
             health tech, so I started building it myself: systems that run my
             own training, sleep, and fueling — on my wrist, my phone, and a
             server that texts me before I wake up. I’m relocating to the U.S. in
-            November 2026 to do this for real. Everything below is real,
+            December 2026 to do this for real. Everything below is real,
             running, and mine.
           </p>
           <div className="rise mt-10" style={{ animationDelay: "1200ms" }}>
@@ -217,7 +219,7 @@ export default function Home() {
             Teaming American defense contractors with Israeli defense-tech
             startups — and writing the weekly newsletter that maps the
             landscape — from Tel Aviv, where the proving ground is the
-            neighborhood. Next: the U.S., November 2026, building health tech
+            neighborhood. Next: the U.S., December 2026, building health tech
             full time.
           </p>
         </section>
@@ -248,9 +250,11 @@ export default function Home() {
             <span className="mx-3 text-rule">/</span>
             <a
               className="inline-block py-3 -my-3 text-dust underline decoration-rule underline-offset-4 transition-colors hover:text-bone hover:decoration-phosphor focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-phosphor"
-              href="/resume.pdf"
+              href="https://docs.google.com/document/d/1-icQWbufuI-crBPaI88yzBOv45khEggSWBXQxw7kidg/edit?usp=sharing"
+            target="_blank"
+            rel="noopener noreferrer"
             >
-              resume (pdf)
+              resume
             </a>
           </p>
         </footer>
