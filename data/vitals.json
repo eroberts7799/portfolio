@@ -1,10 +1,10 @@
 {
-  "syncedDate": "2026-10-25",
-  "restingHr": 51,
+  "syncedDate": "2026-10-26",
+  "restingHr": 55,
   "sleep": {
-    "hours": 9.3,
-    "score": 80
+    "hours": 5.2,
+    "score": 46
   },
-  "lastSession": "rest day",
+  "lastSession": "strength training 51m",
   "briefingAt": "06:05"
 }
