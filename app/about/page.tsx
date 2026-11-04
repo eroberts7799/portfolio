@@ -30,23 +30,20 @@ export default function About() {
         <Avatar />
         <p className="text-pretty text-2xl font-medium text-secondary">
           I work with American defense contractors to source battle-tested Israeli
-          defense tech from Israeli startups. I do this at CET Sandbox, where I run U.S.
-          defense-industrial base partnerships.
+          defense tech from Israeli startups. I do this at CET Sandbox, where I manage
+          U.S. defense-industrial base partnerships.
         </p>
         <p className="text-2xl font-medium text-secondary">
-          I’m more technical than most BD people. I can build things and I understand
-          how the products I’m selling actually work.
+          I love building agents and products, for work and for myself.
         </p>
         <p className="text-2xl font-medium text-secondary">
           Before this I was at Wisetack, a fintech. I launched and scaled 20+
           embedded-financing partnerships with vertical SaaS platforms through API
-          integrations. In 2024 that came out to $1.5M+ in revenue and $30M+ in loans
-          issued.
+          integrations.
         </p>
         <p className="text-2xl font-medium text-secondary">
           I also write a weekly defense-tech newsletter for 600+ Israeli founders,
-          investors, and ecosystem people. Average open rate is over 50%. I built AI
-          agents that do the drafting and find the solicitations.
+          investors, and ecosystem people.
         </p>
         <p className="text-2xl font-medium text-secondary">
           Outside of work I train a lot and like long, hard days outdoors.
