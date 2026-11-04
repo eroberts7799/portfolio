@@ -1,28 +1,12 @@
 import type { Metadata } from "next";
-import {
-  Big_Shoulders,
-  Instrument_Serif,
-  Instrument_Sans,
-  IBM_Plex_Mono,
-} from "next/font/google";
+import { IBM_Plex_Mono, Inter } from "next/font/google";
 import "./globals.css";
+import TopBar from "./components/TopBar";
+import { site } from "./site";
 
-const display = Big_Shoulders({
-  weight: ["600", "700"],
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-display",
-});
-
-const serif = Instrument_Serif({
-  weight: "400",
-  style: ["normal", "italic"],
-  subsets: ["latin"],
-  variable: "--font-serif",
-});
-
-const sans = Instrument_Sans({
-  subsets: ["latin"],
-  variable: "--font-sans",
+  variable: "--font-inter",
 });
 
 const mono = IBM_Plex_Mono({
@@ -32,14 +16,15 @@ const mono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Ethan Roberts — I build the software I want to live with",
-  description:
-    "Partnerships at CET Sandbox, available in the U.S. from November 2026 to build health tech. Builder of an anticipatory music engine, an AI health coach that texts first, and a GPT from first principles.",
-  metadataBase: new URL("https://ethanroberts.dev"),
+  title: {
+    default: site.name,
+    template: `%s · ${site.name}`,
+  },
+  description: site.bio,
+  metadataBase: new URL(site.url),
   openGraph: {
-    title: "Ethan Roberts — I build the software I want to live with",
-    description:
-      "An anticipatory music engine, an AI health coach that texts first, and a GPT from first principles. Real, running, and mine.",
+    title: site.name,
+    description: site.bio,
     type: "website",
   },
   twitter: { card: "summary_large_image" },
@@ -49,11 +34,18 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className="scheme-dark">
-      <body
-        className={`${display.variable} ${serif.variable} ${sans.variable} ${mono.variable} antialiased`}
-      >
-        {children}
+    <html lang="en">
+      <body className={`${inter.variable} ${mono.variable}`}>
+        <TopBar />
+        <main className="relative isolate mx-auto flex min-h-svh w-full min-w-0">
+          <div className="flex flex-1 flex-col">
+            <div className="flex-1">
+              <div className="mx-auto flex max-w-2xl flex-1 flex-col gap-16 py-16 leading-[1.6] text-primary sm:py-32">
+                {children}
+              </div>
+            </div>
+          </div>
+        </main>
       </body>
     </html>
   );

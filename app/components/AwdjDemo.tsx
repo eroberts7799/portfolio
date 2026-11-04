@@ -155,7 +155,7 @@ function synthFallback(ctx: AudioContext, t0: number, dropR: number, endR: numbe
   dropHit(ctx, t0 + dropR);
 }
 
-type Phase = "idle" | "playing" | "done";
+type Phase = "idle" | "playing" | "paused" | "done";
 
 export default function AwdjDemo() {
   const [phase, setPhase] = useState<Phase>("idle");
@@ -170,6 +170,7 @@ export default function AwdjDemo() {
   const playing = useRef<AudioBufferSourceNode | null>(null);
   const fired = useRef<{ [k: string]: boolean }>({});
   const mutedRef = useRef(false);
+  const elapsedRef = useRef(0); // real seconds, survives pause
 
   useEffect(
     () => () => {
@@ -227,16 +228,29 @@ export default function AwdjDemo() {
       setPhase("done");
       return;
     }
+    cancelAnimationFrame(raf.current);
+    try {
+      playing.current?.stop();
+    } catch {}
     if (!audio.current) audio.current = new AudioContext();
     if (audio.current.state === "suspended") await audio.current.resume();
     fired.current = {};
     setLog([`▸ onTimerStart → t=0 backdated`]);
     setPhase("playing");
     if (!mutedRef.current) await startAudio(audio.current);
-    const begun = performance.now();
+    elapsedRef.current = 0;
+    runLoop(0);
+  };
+
+  // Drives the replay clock from the frame timestamps, starting at startAt
+  // real seconds; safe to call again after a pause.
+  const runLoop = (startAt: number) => {
+    let begunMs: number | null = null;
     const step = (now: number) => {
-      const realT = Math.min(REPLAY_S, (now - begun) / 1000);
+      if (begunMs === null) begunMs = now - startAt * 1000;
+      const realT = Math.min(REPLAY_S, (now - begunMs) / 1000);
       const sessionT = sessionFromReal(realT);
+      elapsedRef.current = realT;
       setElapsed(realT);
       setClock(sessionT);
       const fire = (key: string, at: number, fn: () => void) => {
@@ -264,6 +278,20 @@ export default function AwdjDemo() {
       raf.current = requestAnimationFrame(step);
     };
     raf.current = requestAnimationFrame(step);
+  };
+
+  // Pause freezes the clock and the AudioContext together, so the scheduled
+  // drop stays locked to the same replay second when playback resumes.
+  const pause = async () => {
+    cancelAnimationFrame(raf.current);
+    setPhase("paused");
+    if (audio.current?.state === "running") await audio.current.suspend();
+  };
+
+  const resume = async () => {
+    setPhase("playing");
+    if (audio.current?.state === "suspended") await audio.current.resume();
+    runLoop(elapsedRef.current);
   };
 
   const toggleMute = () => {
@@ -379,11 +407,24 @@ export default function AwdjDemo() {
       <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
         <button
           className="border border-rule px-4 py-2 uppercase tracking-[0.14em] text-[0.6875rem] transition-colors hover:border-phosphor focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-phosphor"
-          onClick={start}
-          disabled={phase === "playing"}
+          onClick={phase === "playing" ? pause : phase === "paused" ? resume : start}
         >
-          {phase === "idle" ? "▸ replay a run" : phase === "playing" ? "replaying…" : "▸ replay again"}
+          {phase === "idle"
+            ? "▸ replay a run"
+            : phase === "playing"
+              ? "❚❚ pause"
+              : phase === "paused"
+                ? "▸ play"
+                : "▸ replay again"}
         </button>
+        {phase === "paused" && (
+          <button
+            className="opacity-70 uppercase tracking-[0.14em] text-[0.6875rem] transition-opacity hover:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-phosphor"
+            onClick={start}
+          >
+            ↺ restart
+          </button>
+        )}
         <p className="text-[0.625rem] uppercase tracking-[0.12em] opacity-40">
           music via Mixkit (mixkit.co) · Mixkit License
         </p>

@@ -1,17 +1,58 @@
 @import "tailwindcss";
 
+/* Palette lifted from brianlovin.com: neutral grays on white, inverted under
+   prefers-color-scheme: dark. The old night-ops token names (night, pit, bone,
+   dust, phosphor, rule, signal) are kept as aliases so the project demos keep
+   working, but they now point at the neutral palette. */
 :root {
-  --night: #0f110b;
-  --pit: #161910;
-  --bone: #e4e1d4;
-  --dust: #8d9181;
-  --phosphor: #a8b66a;
-  --rule: #262a1d;
-  --signal: #c4763b;
-  color-scheme: dark;
+  --text-primary: #171717;
+  --text-secondary: #525252;
+  --text-tertiary: #737373;
+  --text-quaternary: #a1a1a1;
+  --bg-main: #ffffff;
+  --bg-elevated: #ffffff;
+  --bg-secondary: #fafafa;
+  --border-primary: rgba(0, 0, 0, 0.12);
+  --border-secondary: rgba(0, 0, 0, 0.09);
+  --selection-bg: rgba(240, 104, 0, 0.1);
+  --selection-fg: #ff6b01;
+
+  --night: var(--bg-main);
+  --pit: var(--bg-secondary);
+  --bone: var(--text-primary);
+  --dust: var(--text-tertiary);
+  --phosphor: var(--text-primary);
+  --rule: var(--border-primary);
+  --signal: #ff6b01;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text-primary: rgba(255, 255, 255, 0.9);
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --text-tertiary: rgba(255, 255, 255, 0.5);
+    --text-quaternary: rgba(255, 255, 255, 0.32);
+    --bg-main: #000000;
+    --bg-elevated: #171717;
+    --bg-secondary: #171717;
+    --border-primary: rgba(255, 255, 255, 0.12);
+    --border-secondary: rgba(255, 255, 255, 0.09);
+    color-scheme: dark;
+  }
 }
 
 @theme inline {
+  --color-primary: var(--text-primary);
+  --color-secondary: var(--text-secondary);
+  --color-tertiary: var(--text-tertiary);
+  --color-quaternary: var(--text-quaternary);
+  --color-main: var(--bg-main);
+  --color-elevated: var(--bg-elevated);
+  --color-surface: var(--bg-secondary);
+  --color-line: var(--border-primary);
+  --color-line-soft: var(--border-secondary);
+
   --color-night: var(--night);
   --color-pit: var(--pit);
   --color-bone: var(--bone);
@@ -19,50 +60,58 @@
   --color-phosphor: var(--phosphor);
   --color-rule: var(--rule);
   --color-signal: var(--signal);
-  --font-display: var(--font-display);
-  --font-serif: var(--font-serif);
-  --font-sans: var(--font-sans);
+
+  --font-sans: var(--font-inter);
   --font-mono: var(--font-mono);
 }
 
+html {
+  background: var(--bg-main);
+}
+
 body {
-  background: var(--night);
-  color: var(--bone);
-  font-family: var(--font-sans), sans-serif;
-  font-size: 1.0625rem;
-  line-height: 1.7;
+  background: var(--bg-main);
+  color: var(--text-primary);
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
 ::selection {
-  background: var(--phosphor);
-  color: var(--night);
+  background: var(--selection-bg);
+  color: var(--selection-fg);
 }
 
-/* Orchestrated load: hero lines rise once, in sequence. */
-@keyframes rise {
-  from {
-    opacity: 0;
-    transform: translateY(0.6rem);
+/* Inline links inside body copy, as on brianlovin.com/about. */
+.link-body {
+  color: var(--text-primary);
+  text-decoration: underline;
+  text-decoration-color: var(--text-quaternary);
+  text-underline-offset: 2px;
+  transition: text-decoration-color 150ms;
+}
+
+.link-body:hover {
+  text-decoration-color: var(--text-primary);
+}
+
+/* Demo panel: a quiet elevated card instead of the old CRT readout. */
+.readout {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-secondary);
+  border-radius: 0.75rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  .readout {
+    box-shadow:
+      inset 0 0 0 0.5px rgba(255, 255, 255, 0.04),
+      inset 0 0.5px rgba(255, 255, 255, 0.04);
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
-.rise {
-  opacity: 0;
-  animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .rise {
-    animation: none;
-    opacity: 1;
-  }
-}
-
-/* Live-telemetry signature: readouts breathe with a phosphor cursor. */
+/* Typing cursor used by the replay demos. */
 @keyframes blink {
   50% {
     opacity: 0;
@@ -72,7 +121,7 @@ body {
 .cursor::after {
   content: "▍";
   margin-left: 0.125rem;
-  color: var(--phosphor);
+  color: var(--text-primary);
   animation: blink 1.2s steps(2, start) infinite;
 }
 
@@ -82,49 +131,63 @@ body {
   }
 }
 
-/* Phosphor readout: text glows faintly, like a CRT at night. */
-.readout {
-  background: var(--pit);
-  color: var(--phosphor);
-  text-shadow: 0 0 8px color-mix(in srgb, var(--phosphor) 35%, transparent);
-}
-
-/* ECG strip: the trace brightens on each beat, timed to real resting HR. */
-@keyframes ecg-beat {
-  0% {
-    opacity: 0.45;
-    filter: drop-shadow(0 0 0 transparent);
+/* Menu overlay enter animation. */
+@keyframes menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
   }
-  10% {
+  to {
     opacity: 1;
-    filter: drop-shadow(0 0 6px color-mix(in srgb, var(--phosphor) 60%, transparent));
-  }
-  35% {
-    opacity: 0.6;
-  }
-  100% {
-    opacity: 0.45;
+    transform: translateY(0);
   }
 }
 
-/* Live signal dot. */
-@keyframes pulse {
-  50% {
-    opacity: 0.35;
-  }
-}
-
-.signal-dot {
-  display: inline-block;
-  width: 0.4rem;
-  height: 0.4rem;
-  border-radius: 9999px;
-  background: var(--signal);
-  animation: pulse 2.4s ease-in-out infinite;
+.menu-in {
+  animation: menu-in 150ms ease-out;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .signal-dot {
+  .menu-in {
     animation: none;
+  }
+}
+
+/* Hover label for icon-only links: data-tip="…" on a .tip element. */
+.tip {
+  position: relative;
+}
+
+.tip::after {
+  content: attr(data-tip);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 2px);
+  transform: translate(-50%, 4px);
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: var(--text-primary);
+  color: var(--bg-main);
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 120ms ease,
+    transform 120ms ease;
+}
+
+.tip:hover::after,
+.tip:focus-visible::after {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tip::after {
+    transition: none;
   }
 }
