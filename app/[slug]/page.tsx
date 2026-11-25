@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import AutosubDemo from "../components/AutosubDemo";
 import AwdjDemo from "../components/AwdjDemo";
 import CoachDemo from "../components/CoachDemo";
 import { ExternalIcon } from "../components/Icons";
 import LlmDemo from "../components/LlmDemo";
+import RadarDemo from "../components/RadarDemo";
 import { projects } from "../site";
 
 type Params = { params: Promise<{ slug: string }> };
@@ -38,6 +40,10 @@ export default async function ProjectPage({ params }: Params) {
           <AwdjDemo />
         ) : project.demo === "coach" ? (
           <CoachDemo />
+        ) : project.demo === "autosub" ? (
+          <AutosubDemo />
+        ) : project.demo === "airadar" || project.demo === "raises" ? (
+          <RadarDemo variant={project.demo} />
         ) : (
           <LlmDemo />
         )}
@@ -62,28 +68,30 @@ export default async function ProjectPage({ params }: Params) {
         </ul>
       </div>
 
-      <div className="flex flex-col gap-4 px-4">
-        <h2 className="select-none leading-[1.6] text-quaternary dark:text-tertiary">Links</h2>
-        <ul className="flex flex-col gap-4 sm:gap-1.5">
-          {project.links.map((l) => (
-            <li key={l.href} className="flex">
-              <a
-                href={l.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group/list-item inline-flex flex-1 items-center gap-2 text-xl"
-              >
-                <span className="font-medium leading-[1.6] text-primary underline-offset-1 group-hover/list-item:underline">
-                  {l.label}
-                </span>
-                <span className="shrink-0 leading-[1.6] text-quaternary">
-                  <ExternalIcon className="text-primary" />
-                </span>
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
+      {project.links.length > 0 && (
+        <div className="flex flex-col gap-4 px-4">
+          <h2 className="select-none leading-[1.6] text-quaternary dark:text-tertiary">Links</h2>
+          <ul className="flex flex-col gap-4 sm:gap-1.5">
+            {project.links.map((l) => (
+              <li key={l.href} className="flex">
+                <a
+                  href={l.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group/list-item inline-flex flex-1 items-center gap-2 text-xl"
+                >
+                  <span className="font-medium leading-[1.6] text-primary underline-offset-1 group-hover/list-item:underline">
+                    {l.label}
+                  </span>
+                  <span className="shrink-0 leading-[1.6] text-quaternary">
+                    <ExternalIcon className="text-primary" />
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </>
   );
 }
